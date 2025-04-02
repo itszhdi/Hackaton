@@ -1,14 +1,10 @@
-/* Setting.css - Стили для страницы настроек профиля */
-
 .settings-container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-family-main);
     color: #4a5568;
   }
-  
-  /* Общие стили для секций */
   .user-info,
   .user-mail,
   .user-password {
@@ -20,14 +16,12 @@
     border: 1px solid #e2e8f0;
     position: relative;
   }
-  
-  /* Стили для секции информации о пользователе */
   .user-info {
     display: flex;
     align-items: center;
+    justify-content: space-between;
     gap: 20px;
   }
-  
   .user-info img {
     width: 90px;
     height: 90px;
@@ -35,7 +29,6 @@
     background-color: #f1f5f9;
     object-fit: cover;
   }
-  
   .user-info p {
     font-size: 22px;
     font-weight: 600;
@@ -43,15 +36,14 @@
     margin: 0;
     flex-grow: 1;
   }
-  
-  /* Стили для секций email и пароля */
+  .user-data {
+  }
   .user-mail,
   .user-password {
     display: flex;
     align-items: center;
     justify-content: space-between;
   }
-  
   .user-mail input,
   .user-password input {
     width: 80%;
@@ -61,15 +53,13 @@
     font-size: 16px;
     color: #4b5563;
     outline: none;
+    font-family: var(--font-family-main);
   }
-  
   .user-mail input:focus,
   .user-password input:focus {
-    border-color: #3b82f6;
+    border-color: var(--color-primary);
   }
-  
-  /* Стили для кнопок */
-  button {
+  .profile-buttons {
     display: flex;
     align-items: center;
     gap: 8px;
@@ -83,17 +73,16 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  
-  button:hover {
+  .profile-buttons:hover {
     background-color: #e2e8f0;
   }
-  
-  button svg {
+  .profile-buttons svg {
     width: 16px;
     height: 16px;
   }
-  
-  /* Заголовки секций как на изображении */
+  ..profile-buttons .user-profile {
+    align-items: end;
+  }
   .settings-container h2 {
     font-size: 24px;
     font-weight: 600;
@@ -101,12 +90,9 @@
     margin-bottom: 20px;
     margin-top: 30px;
   }
-  
   .settings-container h2:first-child {
     margin-top: 0;
   }
-  
-  /* Стили для меток полей */
   .field-label {
     font-size: 14px;
     color: #94a3b8;
@@ -143,8 +129,6 @@
       align-self: flex-end;
     }
   }
-  
-  /* Дополнительные стили для соответствия дизайну с изображения */
   .section-title {
     display: flex;
     justify-content: space-between;
@@ -155,7 +139,7 @@
   .section-title h3 {
     font-size: 18px;
     font-weight: 600;
-    color: #4b5563;
+    color: var(--color-black);
     margin: 0;
   }
   

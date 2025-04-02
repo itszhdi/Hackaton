@@ -65,6 +65,7 @@
     background-color: #f9f9f9;
     font-family: var(--font-family-main);
   }
+  .login-popup input[type="text"]:focus,
   .login-popup input[type="email"]:focus,
   .login-popup input[type="password"]:focus {
     border-color: var(--color-primary);
