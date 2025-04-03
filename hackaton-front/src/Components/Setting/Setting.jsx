@@ -1,22 +1,27 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './Setting.css';
 import { FiEdit2 } from "react-icons/fi";
 import user from "/assets/MainElemets/user.png";
 
 export default function Setting() {
-  // Основные данные пользователя
-  const [email, setEmail] = useState("moera@mail.ru");
-  const [password, setPassword] = useState("userspassword");
-  const [firstName, setFirstName] = useState("Трофим");
-  const [lastName, setLastName] = useState("Быстрицкий");
+  const getStoredValue = (key, defaultValue) => {
+    const stored = localStorage.getItem(key);
+    return stored !== null ? JSON.parse(stored) : defaultValue;
+  };
+
+
+  const [email, setEmail] = useState(() => getStoredValue('userEmail', "moera@mail.ru"));
+  const [password, setPassword] = useState(() => getStoredValue('userPassword', "userspassword"));
+  const [firstName, setFirstName] = useState(() => getStoredValue('userFirstName', "Трофим"));
+  const [lastName, setLastName] = useState(() => getStoredValue('userLastName', "Быстрицкий"));
   
-  // Состояние для модальных окон
+
   const [nameModalOpen, setNameModalOpen] = useState(false);
   const [emailModalOpen, setEmailModalOpen] = useState(false);
   const [passwordModalOpen, setPasswordModalOpen] = useState(false);
   const [verificationModalOpen, setVerificationModalOpen] = useState(false);
   
-  // Состояние для форм в модальных окнах
+
   const [newFirstName, setNewFirstName] = useState(firstName);
   const [newLastName, setNewLastName] = useState(lastName);
   const [newEmail, setNewEmail] = useState(email);
@@ -27,6 +32,13 @@ export default function Setting() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [notification, setNotification] = useState({ show: false, message: "", type: "" });
 
+
+  useEffect(() => {
+    localStorage.setItem('userEmail', JSON.stringify(email));
+    localStorage.setItem('userPassword', JSON.stringify(password));
+    localStorage.setItem('userFirstName', JSON.stringify(firstName));
+    localStorage.setItem('userLastName', JSON.stringify(lastName));
+  }, [email, password, firstName, lastName]);
 
   const showNotification = (message, type = "success") => {
     setNotification({ show: true, message, type });
@@ -210,7 +222,6 @@ export default function Setting() {
               <button 
                 className="button" 
                 onClick={handleEmailUpdate}
-                disabled={newEmail !== confirmEmail || !newEmail}
               >
                 Отправить код
               </button>
@@ -225,12 +236,13 @@ export default function Setting() {
             <h2>Подтверждение email</h2>
             <p>Код подтверждения отправлен на {newEmail}</p>
             <div className="modal-field">
-              <label>Код подтверждения</label>
+              <label className='label'>Код подтверждения</label>
               <input 
                 type="text" 
                 value={verificationCode} 
                 onChange={(e) => setVerificationCode(e.target.value)} 
                 placeholder="Введите код подтверждения"
+                required
               />
             </div>
             <div className="modal-buttons">

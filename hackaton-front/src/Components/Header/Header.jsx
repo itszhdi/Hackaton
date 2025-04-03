@@ -1,35 +1,29 @@
 import React from "react";
-import { PieChart, Pie, Tooltip, Cell } from "recharts";
+import { useBudgets } from "../../Contexts/BudgetContext";
+import './Header.css'
 
-const data = [
-  { name: "Продукты", value: 400 },
-  { name: "Транспорт", value: 300 },
-  { name: "Развлечения", value: 200 },
-  { name: "Коммунальные услуги", value: 100 }
-];
+export default function BudgetAnalytics() {
+  const { budgets, expenses } = useBudgets();
 
-const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
+  const totalExpenses = expenses.reduce((total, expense) => total + expense.amount, 0);
 
-const Header = () => {
   return (
-    <PieChart width={400} height={400}>
-      <Pie 
-        data={data} 
-        dataKey="value" 
-        nameKey="name" 
-        cx="50%" 
-        cy="50%" 
-        outerRadius={120} 
-        fill="#8884d8"
-        label
-      >
-        {data.map((_, index) => (
-          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-        ))}
-      </Pie>
-      <Tooltip />
-    </PieChart>
+    <div className="container analytics-container">      
+    
+      <div className="analytics-summary-budget">
+        <div className="summary-item">
+          <div className="summary-value">{totalExpenses.toLocaleString()} ₸</div>
+          <div className="summary-label">Всего расходов</div>
+        </div>
+        <div className="summary-item">
+          <div className="summary-value">{budgets.length}</div>
+          <div className="summary-label">Категорий бюджета</div>
+        </div>
+        <div className="summary-item">
+          <div className="summary-value">{expenses.length}</div>
+          <div className="summary-label">Операций</div>
+        </div>
+      </div>
+    </div>
   );
-};
-
-export default Header;
+}

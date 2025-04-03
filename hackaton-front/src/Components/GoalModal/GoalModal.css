@@ -1,0 +1,66 @@
+  @keyframes modal-appear {
+    from {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .modal-header {
+    margin-bottom: 20px;
+    font-size: 20px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+  }
+  .modal-form .form-group {
+    margin-bottom: 16px;
+  }
+  .modal-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+  }
+  .modal-form input {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.2s;
+    font-family: var(--font-family-main);
+  }
+  .modal-form input:focus {
+    border-color: var(--color-primary);
+    outline: none;
+  }
+  .modal-form input[type="number"] {
+    appearance: textfield;
+    font-family: var(--font-family-main);
+  }
+  .modal-form input::placeholder {
+    color: #aaa;
+  }
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 24px;
+  }
+  .modal-cancel-btn {
+    padding: 10px 16px;
+    background-color: #f1f1f1;
+    color: var(--color-dark);
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  .modal-cancel-btn:hover {
+    background-color: #e0e0e0;
+  }

@@ -1,0 +1,81 @@
+.card {
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  overflow: hidden;
+}
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.12);
+}
+.card-body {
+  padding: 20px;
+}
+.card-title {
+  margin-bottom: 16px;
+}
+.card-title h4 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+.card-amount {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.current-amount {
+  font-size: 20px;
+  font-weight: 700;
+  color: #333;
+}
+.max-amount {
+  color: #777;
+  font-size: 16px;
+  margin-left: 4px;
+}
+.action-buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+.submit-button {
+  background-color: var(--color-black);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  width: 100%;
+}
+.submit-button:hover {
+  background-color: var(--color-black-tw);
+}
+.button-outline {
+  background-color: transparent;
+  color: var(--color-black);
+  border: 1px solid var(--color-black-tw);
+  border-radius: 6px;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  width: 100%;
+}
+.button-outline:hover {
+  background-color: rgba(49, 130, 206, 0.01);
+}
+@media (min-width: 768px) {
+  .action-buttons {
+    flex-direction: row;
+  }
+  .submit-button, .button-outline {
+    width: auto;
+  }
+}

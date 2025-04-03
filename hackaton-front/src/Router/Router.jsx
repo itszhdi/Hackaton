@@ -9,6 +9,7 @@ import Profile from '../Pages/Profile';
 import Budget from '../Pages/Budget';
 import Targets from '../Pages/Targets';
 import Notifications from '../Pages/Notifications';
+import Analyses from '../Pages/Analyses';
 
 import Login from '../Components/Login/Login';
 
@@ -27,6 +28,7 @@ export default function Router() {
                         <Route path="/budget" element={<Budget />} />
                         <Route path="/targets" element={<Targets />} />
                         <Route path="/notifications" element={<Notifications />} />
+                        <Route path="/analyse" element={<Analyses />} />
                     </Routes>
                     <Footer />
                 </main>

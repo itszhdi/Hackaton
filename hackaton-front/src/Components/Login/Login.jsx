@@ -1,8 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
 import "./Login.css";
 import { IoCloseOutline } from "react-icons/io5";
+import axios from "axios";
 
-export default function Login({ setShowLogin }) {
+// API base URL - adjust according to your backend configuration
+const API_URL = "http://localhost:8000";
+
+export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
   const [currentState, setCurrentState] = useState("Регистрация");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,7 +17,9 @@ export default function Login({ setShowLogin }) {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-  const [step, setStep] = useState("main"); // main, verify, reset-email, reset-verify, reset-password
+  const [successMessage, setSuccessMessage] = useState("");
+  const [step, setStep] = useState("main");
+  const [isLoading, setIsLoading] = useState(false);
   const popupRef = useRef(null);
 
   useEffect(() => {
@@ -30,89 +36,164 @@ export default function Login({ setShowLogin }) {
     };
   }, [setShowLogin]);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (step === "main") {
-      if (!email || !password) {
-        setErrorMessage("Пожалуйста, заполните все поля");
-        return;
-      }
+  // Reset error message when changing states
+  useEffect(() => {
+    setErrorMessage("");
+    setSuccessMessage("");
+  }, [currentState, step]);
 
-      if (currentState === "Регистрация") {
-        if (!firstName || !lastName) {
-          setErrorMessage("Введите имя и фамилию");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+    setSuccessMessage("");
+    setIsLoading(true);
+    
+    try {
+      if (step === "main") {
+        if (!email || !password) {
+          setErrorMessage("Пожалуйста, заполните все поля");
           return;
         }
 
-        if (password.length < 8) {
+        if (currentState === "Регистрация") {
+          if (!firstName || !lastName) {
+            setErrorMessage("Введите имя и фамилию");
+            return;
+          }
+
+          if (password.length < 8) {
+            setErrorMessage("Пароль должен содержать минимум 8 символов");
+            return;
+          }
+
+          if (password !== confirmPassword) {
+            setErrorMessage("Пароли не совпадают");
+            return;
+          }
+
+          // Registration API call
+          const response = await axios.post(`${API_URL}/auth/register`, {
+            userEmail: email,
+            userName: firstName,
+            userLastName: lastName,
+            password: password
+          });
+
+          if (response.data.status === "success") {
+            setSuccessMessage("Код подтверждения отправлен на вашу почту");
+            setStep("verify");
+          }
+        } else {
+          // Login API call
+          const formData = new URLSearchParams();
+          formData.append('username', email);
+          formData.append('password', password);
+
+          const response = await axios.post(`${API_URL}/auth/token`, formData, {
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          });
+          console.log(response.data.accessToken)
+          console.log(response.data.refreshToken)
+          // Save tokens in localStorage
+          localStorage.setItem('accessToken', response.data.accessToken);
+          localStorage.setItem('refreshToken', response.data.refreshToken);
+          
+          // Уведомляем родительский компонент об успешной авторизации
+          onLoginSuccess();
+          
+          setSuccessMessage("Вход выполнен успешно");
+          setTimeout(() => setShowLogin(false), 1000);
+        }
+      } 
+      
+      else if (step === "verify") {
+        if (!verificationCode) {
+          setErrorMessage("Введите код подтверждения");
+          return;
+        }
+
+        // Email verification API call
+        const response = await axios.post(`${API_URL}/auth/verify`, {
+          userEmail: email,
+          userName: firstName,
+          userLastName: lastName,
+          verificationCode: verificationCode
+        });
+
+        if (response.data.status === "success") {
+          setSuccessMessage("Email успешно подтвержден! Теперь вы можете войти");
+          setTimeout(() => {
+            setStep("main");
+            setCurrentState("Авторизация");
+          }, 1500);
+        }
+      } 
+      
+      else if (step === "reset-email") {
+        if (!email) {
+          setErrorMessage("Введите email");
+          return;
+        }
+
+        // Password recovery request API call
+        const response = await axios.post(`${API_URL}/auth/recovery`, {
+          userEmail: email
+        });
+
+        if (response.data.status === "success") {
+          setSuccessMessage("Код для восстановления пароля отправлен на вашу почту");
+          setStep("reset-verify");
+        }
+      } 
+      
+      else if (step === "reset-verify") {
+        if (!verificationCode) {
+          setErrorMessage("Введите код подтверждения");
+          return;
+        }
+
+        // Validation successful, move to password reset step
+        setStep("reset-password");
+      } 
+      
+      else if (step === "reset-password") {
+        if (newPassword.length < 8) {
           setErrorMessage("Пароль должен содержать минимум 8 символов");
           return;
         }
 
-        if (password !== confirmPassword) {
+        if (newPassword !== confirmNewPassword) {
           setErrorMessage("Пароли не совпадают");
           return;
         }
 
-        console.log("Регистрация:", { email, password, firstName, lastName });
+        // Password reset confirmation API call
+        const response = await axios.post(`${API_URL}/auth/recovery/confirm`, {
+          userEmail: email,
+          verificationCode: verificationCode,
+          newPassword: newPassword
+        });
 
-        // Имитируем отправку кода на email
-        setStep("verify");
+        if (response.data.status === "success") {
+          setSuccessMessage("Пароль успешно изменен");
+          setTimeout(() => {
+            setStep("main");
+            setCurrentState("Авторизация");
+          }, 1500);
+        }
+      }
+    } catch (error) {
+      console.error("API Error:", error);
+      if (error.response && error.response.data && error.response.data.detail) {
+        setErrorMessage(error.response.data.detail);
       } else {
-        console.log("Авторизация:", { email, password });
-        // Авторизация прошла успешно
-        setShowLogin(false);
+        setErrorMessage("Произошла ошибка. Пожалуйста, попробуйте снова.");
       }
-    } 
-    
-    else if (step === "verify") {
-      if (!verificationCode) {
-        setErrorMessage("Введите код подтверждения");
-        return;
-      }
-
-      console.log("Код подтверждения:", verificationCode);
-      setShowLogin(false);
-    } 
-    
-    else if (step === "reset-email") {
-      if (!email) {
-        setErrorMessage("Введите email");
-        return;
-      }
-
-      console.log("Восстановление пароля - email:", email);
-      setStep("reset-verify");
-    } 
-    
-    else if (step === "reset-verify") {
-      if (!verificationCode) {
-        setErrorMessage("Введите код подтверждения");
-        return;
-      }
-
-      console.log("Восстановление пароля - код:", verificationCode);
-      setStep("reset-password");
-    } 
-    
-    else if (step === "reset-password") {
-      if (newPassword.length < 8) {
-        setErrorMessage("Пароль должен содержать минимум 8 символов");
-        return;
-      }
-
-      if (newPassword !== confirmNewPassword) {
-        setErrorMessage("Пароли не совпадают");
-        return;
-      }
-
-      console.log("Новый пароль установлен");
-      setStep("main");
-      setCurrentState("Авторизация");
+    } finally {
+      setIsLoading(false);
     }
-
-    setErrorMessage("");
   };
 
   return (
@@ -143,7 +224,7 @@ export default function Login({ setShowLogin }) {
             <input type="password" placeholder="Пароль" value={password} onChange={(e) => setPassword(e.target.value)} required />
             {currentState === "Авторизация" && (
               <span className="forget-pass">
-                <a href="#" onClick={() => setStep("reset-email")}>
+                <a href="#" onClick={(e) => {e.preventDefault(); setStep("reset-email")}}>
                   Забыли пароль?
                 </a>
               </span>
@@ -157,6 +238,7 @@ export default function Login({ setShowLogin }) {
 
         {step === "verify" && (
           <div className="login-popup-inputs">
+            <p className="info-message">Введите код подтверждения, который был отправлен на {email}</p>
             <input type="text" placeholder="Введите код с почты" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} required />
           </div>
         )}
@@ -169,6 +251,7 @@ export default function Login({ setShowLogin }) {
 
         {step === "reset-verify" && (
           <div className="login-popup-inputs">
+            <p className="info-message">Введите код, отправленный на {email}</p>
             <input type="text" placeholder="Введите код с почты" value={verificationCode} onChange={(e) => setVerificationCode(e.target.value)} required />
           </div>
         )}
@@ -181,9 +264,13 @@ export default function Login({ setShowLogin }) {
         )}
 
         {errorMessage && <p className="error-message">{errorMessage}</p>}
+        {successMessage && <p className="success-message">{successMessage}</p>}
 
-        <button type="submit" className="button button-border">
-          {step === "verify" || step === "reset-email"|| step === "reset-verify" ? "Подтвердить" : step === "reset-password" ? "Сохранить" : currentState}
+        <button type="submit" className="button button-border" disabled={isLoading}>
+          {isLoading ? "Загрузка..." : 
+            (step === "verify" || step === "reset-email" || step === "reset-verify" ? 
+              "Подтвердить" : step === "reset-password" ? "Сохранить" : currentState)
+          }
         </button>
 
         {step === "main" && (
@@ -191,6 +278,14 @@ export default function Login({ setShowLogin }) {
             {currentState === "Регистрация" ? "Уже есть аккаунт?" : "Нет аккаунта?"}{" "}
             <span onClick={() => { setCurrentState(currentState === "Регистрация" ? "Авторизация" : "Регистрация"); setErrorMessage(""); }}>
               {currentState === "Регистрация" ? "Войти" : "Зарегистрироваться"}
+            </span>
+          </p>
+        )}
+
+        {step !== "main" && (
+          <p>
+            <span onClick={() => { setStep("main"); setErrorMessage(""); }}>
+              Вернуться назад
             </span>
           </p>
         )}

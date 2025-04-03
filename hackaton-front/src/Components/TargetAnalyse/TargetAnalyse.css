@@ -1,0 +1,122 @@
+  .stats-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-bottom: 65px;
+    font-family: var(--font-family-main);
+  }
+  .stat-card {
+    background-color: var(--color-bg-2);
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+  }
+  .stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  }
+  .stat-card h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+    color: var(--color-black-tw);
+  }
+  .stat-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--color-black);
+  }
+  .chart-section {
+    margin-bottom: 40px;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .chart-section h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: var(--color-black);
+  }
+  .chart-container {
+    height: 300px;
+    width: 100%;
+  }
+  .goals-table {
+    background-color: white;
+    border-radius: 10px;
+    padding: 40px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  .goals-table h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+    color: var(--color-black);
+  }
+  .goals-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .goals-table th, .goals-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #eee;
+  }
+  .goals-table th {
+    background-color: #f5f7fa;
+    font-weight: bold;
+  }
+  .goals-table tr:hover {
+    background-color: #f9f9f9;
+  }
+  .progress-bar-container {
+    width: 100%;
+    background-color: #f0f0f0;
+    border-radius: 10px;
+    height: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background-color: var(--color-primary);
+    border-radius: 10px;
+    transition: width 0.5s ease;
+  }
+  .progress-bar-container span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--color-black);
+  }
+  .no-goals {
+    text-align: center;
+    padding: 50px 0;
+    background-color: #f5f7fa;
+    border-radius: 10px;
+    margin: 30px 0;
+  }
+  @media (max-width: 768px) {
+    .stats-summary {
+      grid-template-columns: 1fr 1fr;
+    }
+    .stat-card {
+      padding: 15px;
+    }
+    .stat-value {
+      font-size: 1.2rem;
+    }
+    .goals-table th, .goals-table td {
+      padding: 8px;
+      font-size: 0.9rem;
+    }
+  }
+  @media (max-width: 480px) {
+    .stats-summary {
+      grid-template-columns: 1fr;
+    }
+  }

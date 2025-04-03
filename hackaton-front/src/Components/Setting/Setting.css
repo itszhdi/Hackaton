@@ -79,6 +79,9 @@
   width: 16px;
   height: 16px;
 }
+.label {
+  margin-top: 10px;
+}
 .profile-buttons .user-profile {
   align-items: end;
 }
