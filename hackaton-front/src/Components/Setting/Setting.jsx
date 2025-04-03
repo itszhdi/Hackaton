@@ -322,10 +322,10 @@ export default function Setting() {
       </div>
 
       <div className="buttons-container">
-        <button className="delete-account-btn" onClick={() => setDeleteAccountModalOpen(true)}>
+        <button className="submit-button dlt" onClick={() => setDeleteAccountModalOpen(true)}>
           Удалить аккаунт
         </button>
-        <button className="logout-btn" onClick={handleLogout}>
+        <button className="submit-button exit" onClick={handleLogout}>
           Выйти из аккаунта
         </button>
       </div>
@@ -334,7 +334,7 @@ export default function Setting() {
         <div className="modal-overlay">
           <div className="modal-content">
             <h2>Удаление аккаунта</h2>
-            <p>Введите пароль для подтверждения удаления аккаунта.</p>
+            <p className='delete-notif'>Введите пароль для подтверждения удаления аккаунта.</p>
             <div className="modal-field">
               <label>Пароль</label>
               <input 
@@ -346,7 +346,7 @@ export default function Setting() {
             </div>
             <div className="modal-buttons">
               <button onClick={() => setDeleteAccountModalOpen(false)}>Отмена</button>
-              <button className="button delete-button" onClick={handleDeleteAccount} disabled={!passwordForDeletion}>
+              <button className="submit-button dlt" onClick={handleDeleteAccount} disabled={!passwordForDeletion}>
                 Удалить
               </button>
             </div>

@@ -266,3 +266,19 @@
 .notification.info {
   background-color: var(--color-black-tw);
 }
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 30px;
+  margin: 56px;
+}
+.submit-button.dlt {
+  background-color: #d93025;
+}
+.submit-button.dlt:hover {
+  background-color:brown;
+}
+.delete-notif {
+  margin-bottom: 20px;
+}
