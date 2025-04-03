@@ -1,11 +1,14 @@
 import './App.css'
 import Router from './Router/Router'
+import ErrorBoundary from './Components/ErrorBoundary'
 
 
 function App() {
   return (
     <>
-    <Router/>
+    <ErrorBoundary>
+      <Router/>
+    </ErrorBoundary>
     </>
   )
 }

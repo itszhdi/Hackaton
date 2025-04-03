@@ -44,7 +44,7 @@
 }
 .user-mail input,
 .user-password input {
-  width: 80%;
+  width: 150%;
   padding: 12px 0;
   border: none;
   background: transparent;
@@ -171,6 +171,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  font-family: var(--font-family-main);
 }
 
 .modal-content {
@@ -180,11 +181,13 @@
   width: 90%;
   max-width: 500px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  font-family: var(--font-family-main);
 }
 
 .modal-content h2 {
   margin-top: 0;
   margin-bottom: 20px;
+  font-family: var(--font-family-headers);
 }
 
 .modal-field {
@@ -195,6 +198,7 @@
   display: block;
   margin-bottom: 5px;
   font-weight: bold;
+  font-family: var(--font-family-main);
 }
 
 .modal-field input {
@@ -203,6 +207,7 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: 16px;
+  font-family: var(--font-family-main);
 }
 
 .modal-buttons {

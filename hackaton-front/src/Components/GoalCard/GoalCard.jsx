@@ -36,7 +36,7 @@ const GoalCard = ({ goal, updateProgress }) => {
       </div>
       <div className="progress-percent">{progressPercent.toFixed(1)}%</div>
       
-      <div className="chart-container">
+      <div className="goal-chart-container">
         <ResponsiveContainer width="100%" height={150}>
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />

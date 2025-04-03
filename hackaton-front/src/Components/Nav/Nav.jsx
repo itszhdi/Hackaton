@@ -13,7 +13,6 @@ import { VscSettings } from "react-icons/vsc";
 import Logo2 from "/assets/MainElemets/Logo2.png";
 import user from "/assets/MainElemets/user.png";
 
-// API base URL - убедитесь, что это тот же URL, что используется в Login компоненте
 const API_URL = "http://localhost:8000";
 
 const navLinks = [
@@ -33,6 +32,15 @@ const Nav = ({ setShowLogin }) => {
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
+  // Функция для выхода из системы
+  const handleLogout = () => {
+    localStorage.removeItem('accessToken');
+    localStorage.removeItem('refreshToken');
+    localStorage.removeItem('userData');
+    setIsAuthenticated(false);
+    setUserData(null);
+  };
+
   // Функция для получения данных пользователя
   const fetchUserData = async () => {
     const accessToken = localStorage.getItem('accessToken');
@@ -43,6 +51,21 @@ const Nav = ({ setShowLogin }) => {
       return;
     }
     
+    const localUserData = localStorage.getItem('userData');
+    
+    if (localUserData) {
+      try {
+        const parsedData = JSON.parse(localUserData);
+        setUserData(parsedData);
+        setIsAuthenticated(true);
+        setIsLoading(false);
+        return; // Если есть данные в localStorage, не делаем запрос к API
+      } catch (e) {
+        console.error("Ошибка при парсинге данных из localStorage:", e);
+      }
+    }
+    
+    // Если данных нет в localStorage или произошла ошибка, делаем запрос к API
     try {
       const response = await axios.get(`${API_URL}/user/me`, {
         headers: {
@@ -50,16 +73,19 @@ const Nav = ({ setShowLogin }) => {
         }
       });
       
+      // Сохраняем данные в localStorage
+      localStorage.setItem('userData', JSON.stringify(response.data));
       setUserData(response.data);
+      setTimeout(() => {
+        window.location.reload(); // Страница перезагрузится
+      }, 1000);
       setIsAuthenticated(true);
     } catch (error) {
       console.error("Error fetching user data:", error);
       
-      // Если токен истек, пробуем обновить его
       if (error.response && error.response.status === 401) {
         await refreshToken();
       } else {
-        // Если другая ошибка или не удалось обновить токен, выходим из системы
         handleLogout();
       }
     } finally {
@@ -67,7 +93,6 @@ const Nav = ({ setShowLogin }) => {
     }
   };
 
-  // Функция для обновления токена
   const refreshToken = async () => {
     const refreshToken = localStorage.getItem('refreshToken');
     
@@ -82,7 +107,6 @@ const Nav = ({ setShowLogin }) => {
       localStorage.setItem('accessToken', response.data.accessToken);
       localStorage.setItem('refreshToken', response.data.refreshToken);
       
-      // После успешного обновления токена, повторно запрашиваем данные пользователя
       fetchUserData();
     } catch (error) {
       console.error("Error refreshing token:", error);
@@ -90,18 +114,13 @@ const Nav = ({ setShowLogin }) => {
     }
   };
 
-  // Функция для выхода из системы
-  const handleLogout = () => {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    setIsAuthenticated(false);
-    setUserData(null);
-  };
-
-  // Проверяем авторизацию при загрузке компонента
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  const displayName = userData ? (userData.firstName || userData.userName || '') : '';
+  const displayLastName = userData ? (userData.lastName || userData.userLastName || '') : '';
+  const displayEmail = userData ? (userData.email || userData.userEmail || '') : '';
 
   return (
     <aside className="left-sidebar">
@@ -121,23 +140,15 @@ const Nav = ({ setShowLogin }) => {
             ))}
           </ul>
 
-          {/* Блок профиля пользователя или кнопка "Войти" */}
           {isLoading ? (
             <div className="loading-placeholder">Загрузка...</div>
           ) : isAuthenticated && userData ? (
-            <div className="user-profile">
+              <div className="profile">
               <img src={user} alt="" className="user-photo" />
-              <div className="user-data">
-                <p className="user-name">{`${userData.userName} ${userData.userLastName}`}</p>
-                <span className="email">{userData.userEmail}</span>
+              <div className="user-information">
+                <p className="user-name">{`${displayName} ${displayLastName}`}</p>
+                <p className="email">{displayEmail}</p>
               </div>
-              <button 
-                className="logout-button" 
-                onClick={handleLogout}
-                title="Выйти"
-              >
-                Выйти
-              </button>
             </div>
           ) : (
             <button 

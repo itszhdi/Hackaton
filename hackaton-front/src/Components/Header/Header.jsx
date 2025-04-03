@@ -9,7 +9,7 @@ export default function BudgetAnalytics() {
 
   return (
     <div className="container analytics-container">      
-    
+    <div className="notifications-header"><h1>Отчет по вашим финансам</h1></div>
       <div className="analytics-summary-budget">
         <div className="summary-item">
           <div className="summary-value">{totalExpenses.toLocaleString()} ₸</div>

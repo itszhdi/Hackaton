@@ -1,12 +1,13 @@
 .hero-container {
     width: 100%;
-    background: var(--color-bg-2);
+    min-height: 100vh;
+    background: var(--color-bg-1);
     color: var(--color-black);
     padding: 2rem;
     border-radius: 0.5rem;
   }
   .hero-content {
-    max-width: 64rem;
+    max-width: 65rem;
     margin: 0 auto;
     padding: 4rem 0;
     text-align: center;
@@ -36,13 +37,13 @@
     margin: 2.5rem auto 0;
   }
   .feature-card {
-    background-color: var(--color-bg-1);
-    padding: 1.5rem;
+    background-color: var(--color-bg-2);
+    padding: 2rem;
     border-radius: 0.5rem;
   }
   .feature-icon-container {
     padding: 0.75rem;
-    background-color: var(--color-bg-2);
+    background-color: var(--color-bg-1);
     border-radius: 9999px;
     margin-right: 0.75rem;
     display: inline-block;

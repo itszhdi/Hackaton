@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import './Welcome.css';
+import { useNavigate } from 'react-router-dom';
 
-const WelcomeHero = () => {
+const WelcomeHero = ({ setShowLogin, isAuthenticated }) => {
+   const navigate = useNavigate();
+
   return (
     <div className="hero-container">
       <div className="hero-content">
@@ -15,10 +18,22 @@ const WelcomeHero = () => {
           Финансовая грамотность играет ключевую роль в обеспечении стабильности и благополучия.
           Откройте для себя новый мир с планированием бюджета, управлении доходами и расходами. 
         </p>
-        
-        <button className="button welcome-button">
-          Начать работу
-        </button>
+
+        { isAuthenticated ? (
+          <button 
+            className="button welcome-button" 
+            onClick={() => navigate('/analyse')}
+          >
+            Посмотреть отчеты
+          </button>
+        ) : (
+          <button 
+            className="button welcome-button" 
+            onClick={() => setShowLogin(true)}
+          >
+            Начать работу
+          </button>
+        )}
       </div>
       
       <div className="features-grid">

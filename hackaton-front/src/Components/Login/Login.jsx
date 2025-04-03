@@ -104,6 +104,9 @@ export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
           onLoginSuccess();
           
           setSuccessMessage("Вход выполнен успешно");
+          setTimeout(() => {
+            window.location.reload(); // Страница перезагрузится
+          }, 1000);
           setTimeout(() => setShowLogin(false), 1000);
         }
       } 
