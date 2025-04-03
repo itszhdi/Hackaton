@@ -9,11 +9,12 @@ import { GoGoal } from "react-icons/go";
 import { IoAnalyticsOutline } from "react-icons/io5";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { VscSettings } from "react-icons/vsc";
+import { FiLogOut } from "react-icons/fi";
 
 import Logo2 from "/assets/MainElemets/Logo2.png";
 import user from "/assets/MainElemets/user.png";
 
-// API base URL - убедитесь, что это тот же URL, что используется в Login компоненте
+// API base URL
 const API_URL = "http://localhost:8000";
 
 const navLinks = [
@@ -98,10 +99,36 @@ const Nav = ({ setShowLogin }) => {
     setUserData(null);
   };
 
-  // Проверяем авторизацию при загрузке компонента
+  // Добавляем слушатель события для обновления данных пользователя после авторизации
   useEffect(() => {
+    const handleStorageChange = () => {
+      fetchUserData();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    
+    // Проверка наличия токена при загрузке компонента
     fetchUserData();
+    
+    // Добавляем интервальную проверку для подстраховки
+    const authCheckInterval = setInterval(() => {
+      const accessToken = localStorage.getItem('accessToken');
+      if (accessToken && !isAuthenticated) {
+        fetchUserData();
+      }
+    }, 1000);
+    
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(authCheckInterval);
+    };
   }, []);
+
+  // Получаем первые буквы имени и фамилии для аватара
+  const getInitials = () => {
+    if (!userData) return "";
+    return `${userData.userName.charAt(0)}${userData.userLastName.charAt(0)}`;
+  };
 
   return (
     <aside className="left-sidebar">
@@ -123,10 +150,19 @@ const Nav = ({ setShowLogin }) => {
 
           {/* Блок профиля пользователя или кнопка "Войти" */}
           {isLoading ? (
-            <div className="loading-placeholder">Загрузка...</div>
+            <div className="loading-placeholder">
+              <div className="loading-spinner"></div>
+              <span>Загрузка...</span>
+            </div>
           ) : isAuthenticated && userData ? (
             <div className="user-profile">
-              <img src={user} alt="" className="user-photo" />
+              <div className="user-avatar">
+                {userData.userPhoto ? (
+                  <img src={userData.userPhoto} alt="Фото пользователя" />
+                ) : (
+                  <div className="user-initials">{getInitials()}</div>
+                )}
+              </div>
               <div className="user-data">
                 <p className="user-name">{`${userData.userName} ${userData.userLastName}`}</p>
                 <span className="email">{userData.userEmail}</span>
@@ -135,13 +171,14 @@ const Nav = ({ setShowLogin }) => {
                 className="logout-button" 
                 onClick={handleLogout}
                 title="Выйти"
+                aria-label="Выйти из системы"
               >
-                Выйти
+                <FiLogOut />
               </button>
             </div>
           ) : (
             <button 
-              className="button button-border nav-button" 
+              className="button button-border login-button" 
               onClick={() => setShowLogin(true)}
             >
               Войти

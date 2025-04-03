@@ -42,6 +42,14 @@ export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
     setSuccessMessage("");
   }, [currentState, step]);
 
+  // Функция для ручного вызова события изменения localStorage
+  const triggerStorageEvent = (key, value) => {
+    // Создаем и диспатчим пользовательское событие
+    const event = new Event('storage');
+    document.dispatchEvent(event);
+    window.dispatchEvent(event);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -52,22 +60,26 @@ export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
       if (step === "main") {
         if (!email || !password) {
           setErrorMessage("Пожалуйста, заполните все поля");
+          setIsLoading(false);
           return;
         }
 
         if (currentState === "Регистрация") {
           if (!firstName || !lastName) {
             setErrorMessage("Введите имя и фамилию");
+            setIsLoading(false);
             return;
           }
 
           if (password.length < 8) {
             setErrorMessage("Пароль должен содержать минимум 8 символов");
+            setIsLoading(false);
             return;
           }
 
           if (password !== confirmPassword) {
             setErrorMessage("Пароли не совпадают");
+            setIsLoading(false);
             return;
           }
 
@@ -94,14 +106,33 @@ export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
               'Content-Type': 'application/x-www-form-urlencoded'
             }
           });
-          console.log(response.data.accessToken)
-          console.log(response.data.refreshToken)
+          
           // Save tokens in localStorage
           localStorage.setItem('accessToken', response.data.accessToken);
           localStorage.setItem('refreshToken', response.data.refreshToken);
           
+          // Вызываем событие хранилища после успешного входа
+          triggerStorageEvent('accessToken', response.data.accessToken);
+          
+          // Загружаем данные пользователя сразу после авторизации
+          try {
+            const userResponse = await axios.get(`${API_URL}/user/me`, {
+              headers: {
+                Authorization: `Bearer ${response.data.accessToken}`
+              }
+            });
+            
+            // Сохраняем базовую информацию о пользователе для мгновенного отображения
+            localStorage.setItem('currentUser', JSON.stringify(userResponse.data));
+            triggerStorageEvent('currentUser', JSON.stringify(userResponse.data));
+          } catch (error) {
+            console.error("Error fetching user data after login:", error);
+          }
+          
           // Уведомляем родительский компонент об успешной авторизации
-          onLoginSuccess();
+          if (typeof onLoginSuccess === 'function') {
+            onLoginSuccess();
+          }
           
           setSuccessMessage("Вход выполнен успешно");
           setTimeout(() => setShowLogin(false), 1000);
@@ -111,6 +142,7 @@ export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
       else if (step === "verify") {
         if (!verificationCode) {
           setErrorMessage("Введите код подтверждения");
+          setIsLoading(false);
           return;
         }
 
@@ -134,6 +166,7 @@ export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
       else if (step === "reset-email") {
         if (!email) {
           setErrorMessage("Введите email");
+          setIsLoading(false);
           return;
         }
 
@@ -151,6 +184,7 @@ export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
       else if (step === "reset-verify") {
         if (!verificationCode) {
           setErrorMessage("Введите код подтверждения");
+          setIsLoading(false);
           return;
         }
 
@@ -161,11 +195,13 @@ export default function Login({ setShowLogin, onLoginSuccess = () => {} }) {
       else if (step === "reset-password") {
         if (newPassword.length < 8) {
           setErrorMessage("Пароль должен содержать минимум 8 символов");
+          setIsLoading(false);
           return;
         }
 
         if (newPassword !== confirmNewPassword) {
           setErrorMessage("Пароли не совпадают");
+          setIsLoading(false);
           return;
         }
 
